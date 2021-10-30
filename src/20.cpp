@@ -22,6 +22,12 @@ void print_vector(std::vector<std::pair<int, int>>& m) {
        std::cout << m[i].first << " " << m[i].second << std::endl; 
 }
 
+template <class T>
+void print_vector(T& m) {
+    for (int32_t i = 0; i < m.size(); ++i)
+       std::cout << m[i] << std::endl; 
+}
+
 class CycloPeptide {
 private:
     std::string Peptide;
@@ -82,9 +88,6 @@ std::vector<int> CycloSpectrum(std::string peptide) {
 
         elems.push_back(std::stoi(pep2));
 
-        // print_vector(elems);
-        // std::cout << elems.size() / 2 << std::endl;
-
         for (int i = 1; i < (elems.size() / 2); ++i) {
             for (int j = 0; j < (elems.size() / 2); ++j) {
                 spectrum.push_back(vec_sum(elems, j, j + i));
@@ -95,8 +98,6 @@ std::vector<int> CycloSpectrum(std::string peptide) {
         
         std::sort(spectrum.begin(), spectrum.end());
 
-        // print_vector(spectrum);
-        //spectrum.erase(std::unique( spectrum.begin(), spectrum.end() ), spectrum.end() );
     }
     
     return spectrum;
@@ -104,15 +105,19 @@ std::vector<int> CycloSpectrum(std::string peptide) {
 
 
 
-
 int Score(std::string Peptide, std::vector<int> Spectr) {
     std::vector<int> PeptideSpectr = CycloSpectrum(Peptide);
-
     int score = 0;
     for (int i = 0; i < PeptideSpectr.size(); ++i) {
-        if (std::find(Spectr.begin(), Spectr.end(), PeptideSpectr[i]) != Spectr.end())
+        auto it = std::find(Spectr.begin(), Spectr.end(), PeptideSpectr[i]);
+        if (it != Spectr.end()) {
             score++;
+            Spectr.erase(it);
+        }
     }
+
+    std::map<int, int> dict;
+
 
     return score;
 }
@@ -164,6 +169,7 @@ std::string LeaderBoardCycloPeptideSequencing(std::vector<int> Spectr, int N, st
     std::vector<CycloPeptide> LeaderBoard = {CycloPeptide()};
     CycloPeptide LeaderPeptide;
     
+    std::vector<CycloPeptide> LeaderPeptides;
     
     int ParentMass = Spectr[Spectr.size() - 1];
     std::cout << "ParentMass " << ParentMass << std::endl;
@@ -180,6 +186,10 @@ std::string LeaderBoardCycloPeptideSequencing(std::vector<int> Spectr, int N, st
                 if (LeaderBoard[i].GetScore() > LeaderPeptide.GetScore()) {
                     LeaderPeptide = LeaderBoard[i];
                 }
+
+                if (LeaderBoard[i].GetScore() >= LeaderPeptide.GetScore()) {
+                    LeaderPeptides.push_back(LeaderBoard[i]);
+                }
                     
                 
                 nLeaderBoard.push_back(LeaderBoard[i]);
@@ -193,15 +203,13 @@ std::string LeaderBoardCycloPeptideSequencing(std::vector<int> Spectr, int N, st
         LeaderBoard = nLeaderBoard;
     }
     
-
     return LeaderPeptide.GetPeptide();
 }
 
 
-std::vector<int> conv(std::vector<int> spectrum, int m) {
-    //spectrum.push_back(0);
-    //std::sort(spectrum.begin(), spectrum.end());
-    //spectrum.erase(std::unique( spectrum.begin(), spectrum.end() ), spectrum.end());
+std::vector<int> conv(std::vector<int> &spectrum, int m) {
+    spectrum.push_back(0);
+    std::sort(spectrum.begin(), spectrum.end());
 
     std::map<int, int> new_spectrum = {};
 
@@ -210,7 +218,6 @@ std::vector<int> conv(std::vector<int> spectrum, int m) {
             int diff = elem_j - elem_i;
             if (diff >= 57 && diff <= 200)
                 new_spectrum[diff]++;
-            //new_spectrum.push_back(elem_j - elem_i);
         }
     }
 
@@ -232,9 +239,6 @@ std::vector<int> conv(std::vector<int> spectrum, int m) {
 
     std::sort(convolution.begin(), convolution.end());
 
-    print_vector(new_spectrum_vector);
-    std::cout << "--------" << std::endl;
-    print_vector(convolution);
     return convolution;
 }
 
@@ -256,12 +260,7 @@ int main() {
     
     std::vector<int> new_mas = conv(spectr, m);
 
-    //spectr.push_back(0);
-    std::sort(spectr.begin(), spectr.end());
-    //spectr.erase(std::unique( spectr.begin(), spectr.end() ), spectr.end());
-
     std::cout << LeaderBoardCycloPeptideSequencing(spectr, n, new_mas) << std::endl;
-    
     
     return 0;
 }
