@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 70ab45250bf6f624046acb6128f73bca679c6f0f
 # Prerequisites
 *.d
 
@@ -30,3 +34,11 @@
 *.exe
 *.out
 *.app
+<<<<<<< HEAD
+=======
+
+/build
+/tests
+/ans
+.vscode
+>>>>>>> 70ab45250bf6f624046acb6128f73bca679c6f0f
