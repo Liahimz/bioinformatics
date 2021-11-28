@@ -4,7 +4,7 @@ project(main)
 set(CMAKE_CXX_STANDARD 17)
 
 set(SOURCE_FILES
-        src/20.cpp)
+        src/30.cpp)
 
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3")
 
